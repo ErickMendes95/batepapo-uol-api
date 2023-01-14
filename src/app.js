@@ -1,4 +1,4 @@
-import express from 'express'
+import express, { application } from 'express'
 import cors from 'cors'
 import { MongoClient } from 'mongodb'
 import dotenv from 'dotenv'
@@ -15,7 +15,44 @@ try {
 }
 
 
-const server = express()
+const app = express()
 
-server.use(cors())
-server.use(express.json())
+app.use(cors())
+app.use(express.json())
+
+app.get("/participants", async (req, res) => {
+    try{
+        const lista = db.collection("participants").find({}).toArray()
+        return res.status(200).send(lista)
+    }
+	catch(err){
+        console.log(err)
+    }
+	}
+)
+
+app.get("/messages", async (req, res) => {
+	
+	
+}
+)
+
+app.post("/participants", async (req, res) => {
+	
+	
+    }
+)
+
+app.post("/messages", async (req, res) => {
+	
+	
+}
+)
+
+app.post("/status", async (req, res) => {
+	
+	
+}
+)
+
+app.listen(process.env.PORT)
