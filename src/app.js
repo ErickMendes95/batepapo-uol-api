@@ -1,28 +1,34 @@
-import express, { application } from 'express'
+import express from 'express'
 import cors from 'cors'
 import { MongoClient } from 'mongodb'
 import dotenv from 'dotenv'
+import joi from 'joi'
+import dayjs from 'dayjs'
+
 dotenv.config()
 
-const mongoClient = new MongoClient(process.env.DATABASE_URL)
+const mongoClient = new MongoClient(process.env.DATABASE_URL);
+
 let db;
 
 await mongoClient.connect()
 try {
-   db = mongoClient.db()
+    db = mongoClient.db("projeto13")
+    console.log("Tudo certo")
 }  catch (err){
 	console.log(err)
 }
-
 
 const app = express()
 
 app.use(cors())
 app.use(express.json())
 
+
+
 app.get("/participants", async (req, res) => {
     try{
-        const lista = db.collection("participants").find({}).toArray()
+        const lista = await db.collection("participants").find({}).toArray()
         return res.status(200).send(lista)
     }
 	catch(err){
@@ -32,25 +38,97 @@ app.get("/participants", async (req, res) => {
 )
 
 app.get("/messages", async (req, res) => {
-	
-	
+	try{
+        const mensagens = await db.collection("messages").find({}).toArray()
+        
+    }
+	catch(err){
+        console.log(err)
+    }
 }
 )
 
 app.post("/participants", async (req, res) => {
-	
-	
+    const user = req.body
+
+    try{
+        const userSchema = joi.object({
+            name: joi.string().required()
+        })
+
+        const validation = userSchema.validate(user, { abortEarly: true });
+
+        if (validation.error) {
+          return res.status(422).send(validation.error.details)
+        }
+
+        const userExiste = await db.collection("participants").findOne({name: user.name})
+
+        if(userExiste){
+            return res.sendStatus(409)
+        }
+
+            await db.collection("participants").insertOne({ name: user.name, lastStatus: Date.now()})
+
+            res. sendStatus(201)
+    } catch(err){
+        console.log(err)
     }
-)
+
+})
 
 app.post("/messages", async (req, res) => {
+    const { User } = req.header 
+	const message = req.body
 	
-	
+    try{
+        const messageSchema = joi.object({
+            to: joi.string().required(),
+            text: joi.string().required(),
+            type: joi.string().valid("message", "private_message").required
+        })
+
+        const validation = messageSchema.validate(message, { abortEarly: false });
+
+        const userExiste = await db.collection("participants").findOne({name: User})
+
+        if (validation.error || !userExiste) {
+          return res.status(422).send(validation.error.details)
+        }
+
+        await db.collection("messages").insertOne({
+            from: User, 
+            to: message.to, 
+            text: message.text, 
+            type: message.type, 
+            time: dayjs().format('HH:MM:SS')
+        })
+
+        res.sendStatus(201)    
+    } catch (err){
+        console.log(err)
+    }    
 }
 )
 
 app.post("/status", async (req, res) => {
-	
+	const {User} = req.header
+
+    try{
+
+        const userExiste = await db.collection("participants").find({name: User})
+
+        if(!userExiste){
+            return res.sendStatus(404)
+        }
+
+        await db.collection(participants).updateOne({name: User}, { $inc: { lastStatus: Date.now() }})
+
+        res.sendStatus(200)
+
+    } catch (err){
+        console.log(err)
+    }
 	
 }
 )
