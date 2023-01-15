@@ -110,7 +110,7 @@ app.post("/messages", async (req, res) => {
         const messageSchema = joi.object().keys({
             to: joi.string().required(),
             text: joi.string().required(),
-            type: joi.string().allow('message','private_message').required
+            type: joi.string().allow('message','private_message').required()
         })
 
         const validation = messageSchema.validate(message, { abortEarly: true });
