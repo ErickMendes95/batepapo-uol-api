@@ -38,9 +38,17 @@ app.get("/participants", async (req, res) => {
 )
 
 app.get("/messages", async (req, res) => {
-	try{
-        const mensagens = await db.collection("messages").find({}).toArray()
-        
+	const limit = parseInt(req.query.limit)
+    const { User } = req.header
+    
+    try{
+        const mensagens = await db.collection("messages").find({ $or: [ {from: User}, {to: User} ] }).toArray()
+        const arrayInvertidoMensagens = [...mensagens].reverse()
+        if(!limit){
+            return res.send(mensagens)
+        }
+
+        res.send(arrayInvertidoMensagens.slice(0,limit))
     }
 	catch(err){
         console.log(err)
