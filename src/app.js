@@ -13,8 +13,7 @@ let db;
 
 await mongoClient.connect()
 try {
-    db = mongoClient.db("projeto13")
-    console.log("Tudo certo")
+    db = mongoClient.db()
 }  catch (err){
 	console.log(err)
 }
