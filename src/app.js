@@ -41,6 +41,10 @@ app.get("/messages", async (req, res) => {
     const { user } = req.headers
     
     try{
+        if(limit <= 0 || limit == isNaN()) {
+            return res.sendStatus(422)
+        }
+        
         const mensagens = await db.collection("messages").find({ $or: [ {from: user}, {to: user} ] }).toArray()
         const arrayInvertidoMensagens = [...mensagens].reverse()
         if(!limit){
@@ -110,7 +114,7 @@ app.post("/messages", async (req, res) => {
         const messageSchema = joi.object().keys({
             to: joi.string().required(),
             text: joi.string().required(),
-            type: joi.string().allow('message','private_message').required()
+            type: joi.string().valid('message','private_message').required()
         })
 
         const validation = messageSchema.validate(message, { abortEarly: true });
