@@ -38,10 +38,10 @@ app.get("/participants", async (req, res) => {
 
 app.get("/messages", async (req, res) => {
 	const limit = parseInt(req.query.limit)
-    const { User } = req.header
+    const { user } = req.headers
     
     try{
-        const mensagens = await db.collection("messages").find({ $or: [ {from: User}, {to: User} ] }).toArray()
+        const mensagens = await db.collection("messages").find({ $or: [ {from: user}, {to: user} ] }).toArray()
         const arrayInvertidoMensagens = [...mensagens].reverse()
         if(!limit){
             return res.send(mensagens)
@@ -93,16 +93,18 @@ app.post("/participants", async (req, res) => {
 })
 
 app.post("/messages", async (req, res) => {
-    const { User } = req.header 
-	const message = req.body
+    const message = req.body
+    const {user} = req.headers 
 	
+    console.log(user)
+    console.log(message)
     try{
 
-        if(!User){
+        if(!user){
             return res.sendStatus(422)
         }
 
-        const userExiste = await db.collection("participants").findOne({name: User})
+        const userExiste = await db.collection("participants").findOne({name: user})
     
         if(!userExiste){
             return res.sendStatus(422)
@@ -121,7 +123,7 @@ app.post("/messages", async (req, res) => {
         }
 
         await db.collection("messages").insertOne({
-            from: User, 
+            from: user, 
             to: message.to, 
             text: message.text, 
             type: message.type, 
@@ -136,17 +138,17 @@ app.post("/messages", async (req, res) => {
 )
 
 app.post("/status", async (req, res) => {
-	const {User} = req.header
+	const {user} = req.headers
 
     try{
 
-        const userExiste = await db.collection("participants").find({name: User})
+        const userExiste = await db.collection("participants").find({name: user})
 
         if(!userExiste){
             return res.sendStatus(404)
         }
 
-        await db.collection(participants).updateOne({name: User}, { $inc: { lastStatus: Date.now() }})
+        await db.collection(participants).updateOne({name: user}, { $inc: { lastStatus: Date.now() }})
 
         res.sendStatus(200)
 
