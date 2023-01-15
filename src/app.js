@@ -41,14 +41,15 @@ app.get("/messages", async (req, res) => {
     const { user } = req.headers
     
     try{
+        
+        const mensagens = await db.collection("messages").find({ $or: [ {from: user} ] }).toArray()
+        const arrayInvertidoMensagens = [...mensagens].reverse()
+
         if(limit <= 0 || isNaN(limit)) {
             return res.sendStatus(422)
         }
-
-        const mensagens = await db.collection("messages").find({ $or: [ {from: user}, {to: 'todos'} ] }).toArray()
-        const arrayInvertidoMensagens = [...mensagens].reverse()
         if(!limit){
-            return res.send(mensagens)
+            return res.send(arrayInvertidoMensagens)
         }
 
         res.send(arrayInvertidoMensagens.slice(0,limit))
@@ -88,7 +89,9 @@ app.post("/participants", async (req, res) => {
                 to: 'Todos',
                 text: 'entra na sala...',
                 type: 'status',
-                time: dayjs().format("HH:mm:ss")})
+                time: dayjs().format("HH:mm:ss")
+            })
+            
             res.sendStatus(201)
     } catch(err){
         console.log(err)
