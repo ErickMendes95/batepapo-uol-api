@@ -99,7 +99,7 @@ app.post("/messages", async (req, res) => {
     try{
 
         if(!user){
-            return res.sendStatus(421)
+            return res.sendStatus(422)
         }
 
         const userExiste = await db.collection("participants").findOne({name: user})
@@ -110,14 +110,14 @@ app.post("/messages", async (req, res) => {
         const messageSchema = joi.object().keys({
             to: joi.string().required(),
             text: joi.string().required(),
-            type: joi.string().valid('message','private_message').required,
+            type: joi.string().allow('message','private_message').required
         })
 
         const validation = messageSchema.validate(message, { abortEarly: true });
 
 
         if (validation.error) {
-          return res.status(423).send(validation.error.details)
+          return res.status(422).send(validation.error.details)
         }
 
         await db.collection("messages").insertOne({
@@ -128,7 +128,7 @@ app.post("/messages", async (req, res) => {
             time: dayjs().format('HH:mm:ss')
         })
 
-        res.sendStatus(201)    
+        return res.sendStatus(201)    
     } catch (err){
         console.log(err)
     }    
