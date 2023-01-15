@@ -84,7 +84,7 @@ app.post("/participants", async (req, res) => {
                 to: 'Todos',
                 text: 'entra na sala...',
                 type: 'status',
-                time: dayjs().format("HH:MM:ss")})
+                time: dayjs().format("HH:mm:ss")})
             res.sendStatus(201)
     } catch(err){
         console.log(err)
@@ -125,7 +125,7 @@ app.post("/messages", async (req, res) => {
             to: message.to, 
             text: message.text, 
             type: message.type, 
-            time: dayjs().format('HH:MM:ss')
+            time: dayjs().format('HH:mm:ss')
         })
 
         res.sendStatus(201)    
