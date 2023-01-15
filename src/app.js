@@ -78,7 +78,7 @@ app.post("/participants", async (req, res) => {
             await db.collection("participants").insertOne({ 
                 name: user.name, 
                 lastStatus: Date.now()})
-                
+
             await db.collection("messages").insertOne({
                 from: user.name,
                 to: 'Todos',
@@ -97,17 +97,26 @@ app.post("/messages", async (req, res) => {
 	const message = req.body
 	
     try{
+
+        if(!User){
+            return res.sendStatus(422)
+        }
+
+        const userExiste = await db.collection("participants").findOne({name: User})
+    
+        if(!userExiste){
+            return res.sendStatus(422)
+        }
         const messageSchema = joi.object({
             to: joi.string().required(),
             text: joi.string().required(),
-            type: joi.string().valid("message", "private_message").required
+            type: joi.string().valid("message","private_message").required
         })
 
         const validation = messageSchema.validate(message, { abortEarly: false });
 
-        const userExiste = await db.collection("participants").findOne({name: User})
 
-        if (validation.error || !userExiste) {
+        if (validation.error) {
           return res.status(422).send(validation.error.details)
         }
 
