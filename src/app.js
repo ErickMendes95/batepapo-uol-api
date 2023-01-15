@@ -95,13 +95,11 @@ app.post("/participants", async (req, res) => {
 app.post("/messages", async (req, res) => {
     const message = req.body
     const {user} = req.headers 
-	
-    console.log(user)
-    console.log(message)
+
     try{
 
         if(!user){
-            return res.sendStatus(422)
+            return res.sendStatus(421)
         }
 
         const userExiste = await db.collection("participants").findOne({name: user})
@@ -109,17 +107,17 @@ app.post("/messages", async (req, res) => {
         if(!userExiste){
             return res.sendStatus(422)
         }
-        const messageSchema = joi.object({
+        const messageSchema = joi.object().keys({
             to: joi.string().required(),
             text: joi.string().required(),
-            type: joi.string().valid("message","private_message").required
+            type: joi.string().valid('message','private_message').required,
         })
 
-        const validation = messageSchema.validate(message, { abortEarly: false });
+        const validation = messageSchema.validate(message, { abortEarly: true });
 
 
         if (validation.error) {
-          return res.status(422).send(validation.error.details)
+          return res.status(423).send(validation.error.details)
         }
 
         await db.collection("messages").insertOne({
