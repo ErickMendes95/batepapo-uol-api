@@ -42,7 +42,7 @@ app.get("/messages", async (req, res) => {
     
     try{
 
-        if(limit <= 0 || typeof limit !== 'string') {
+        if(+limit <= 0 || typeof limit !== 'string') {
             return res.sendStatus(422)
         }
 
@@ -50,8 +50,8 @@ app.get("/messages", async (req, res) => {
         const arrayInvertidoMensagens = [...mensagens].reverse()
         
 
-        if(limit){
-           return res.send(arrayInvertidoMensagens.slice(0,parseInt(limit)))
+        if(+limit){
+           return res.send(arrayInvertidoMensagens.slice(0,+limit))
         }
         
         res.send(arrayInvertidoMensagens)
@@ -167,27 +167,25 @@ app.post("/status", async (req, res) => {
 }
 )
 
-setInterval(() => {
-    const time = date.now()
-
+setInterval(async () => {
     await db.collection("participants").deleteMany({lastStatus: {$lt: (Date.now() -10)}})
 }, 15000);
 
-setInterval(async () => {
+// setInterval(async () => {
 
-    await db.collection("participants").find().map(async (item) => {
+//     await db.collection("participants").find().map(async (item) => {
         
-        if(item.lastStatus < Date.now() - 10){
-            await db.collection("participants").deleteOne({name: item.name})
-            await db.collection("messages").insertOne({
-                from: item.name, 
-                to: 'Todos', 
-                text: 'sai da sala...',
-                type: 'status', 
-                time: dayjs().format('HH:mm:ss')
-            })
-        }
-    })
-}, 15000);
+//         if(item.lastStatus < Date.now() - 10){
+//             await db.collection("participants").deleteOne({name: item.name})
+//             await db.collection("messages").insertOne({
+//                 from: item.name, 
+//                 to: 'Todos', 
+//                 text: 'sai da sala...',
+//                 type: 'status', 
+//                 time: dayjs().format('HH:mm:ss')
+//             })
+//         }
+//     })
+// }, 15000);
 
 app.listen(process.env.PORT)
