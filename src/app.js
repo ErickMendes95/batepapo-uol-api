@@ -42,7 +42,7 @@ app.get("/messages", async (req, res) => {
     
     try{
 
-        if(+limit <= 0 || typeof limit !== 'string') {
+        if(+limit <= 0 || typeof limit === 'string') {
             return res.sendStatus(422)
         }
 
