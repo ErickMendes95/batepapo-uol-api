@@ -167,7 +167,7 @@ app.post("/status", async (req, res) => {
 
 setInterval(async () => {
 
-    await db.collection("participants").find({}).map(async (item) => {
+    await db.collection("participants").find().map(async (item) => {
         
         if(item.lastStatus < (Date.now() - 10)){
             await db.collection("participants").deleteOne({name: item.name})
