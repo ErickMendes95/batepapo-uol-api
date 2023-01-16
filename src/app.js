@@ -2,7 +2,7 @@ import express from 'express'
 import cors from 'cors'
 import { MongoClient } from 'mongodb'
 import dotenv from 'dotenv'
-import joi, { number } from 'joi'
+import joi from 'joi'
 import dayjs from 'dayjs'
 
 dotenv.config()
@@ -41,14 +41,13 @@ app.get("/messages", async (req, res) => {
     const { user } = req.headers
     
     try{
+
+        const mensagens = await db.collection("messages").find({ $or: [ {from: user}, {to: 'Todos'}, {to: user} ] }).toArray()
+        const arrayInvertidoMensagens = [...mensagens].reverse()
         
         if(limit <= 0 || typeof limit !== 'string') {
             return res.sendStatus(422)
         }
-        
-        const mensagens = await db.collection("messages").find({ $or: [ {from: user}, {to: 'Todos'}, {to: user} ] }).toArray()
-        const arrayInvertidoMensagens = [...mensagens].reverse()
-
 
         if(limit){
             return res.send(arrayInvertidoMensagens.slice(0,limit))
