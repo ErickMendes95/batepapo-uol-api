@@ -39,14 +39,13 @@ app.get("/participants", async (req, res) => {
 app.get("/messages", async (req, res) => {
 	const limit = req.query.limit
     const { user } = req.headers
-    
     try{
 
         if(limit<=0){
             return res.sendStatus(422)
         }
 
-        if(isNaN(limit)){
+        if(isNaN(Number(limit))){
             return res.sendStatus(422)
         }
 
