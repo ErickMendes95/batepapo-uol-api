@@ -148,13 +148,13 @@ app.post("/status", async (req, res) => {
 
     try{
 
-        const userExiste = await db.collection("participants").find({name: user})
+        const userExiste = await db.collection("participants").findOne({name: user})
 
         if(!userExiste){
             return res.sendStatus(404)
         }
 
-        await db.collection(participants).updateOne({name: user}, { $inc: { lastStatus: Date.now() }})
+        await db.collection("participants").updateOne({name: user}, { $inc: { lastStatus: Date.now() }})
 
         res.sendStatus(200)
 
