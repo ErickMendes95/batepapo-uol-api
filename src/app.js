@@ -49,7 +49,7 @@ app.get("/messages", async (req, res) => {
             return res.sendStatus(422)
         }
 
-        if(isNaN(limit)){
+        if(typeof limit == 'string'){
             return res.sendStatus(422)
         }
 
