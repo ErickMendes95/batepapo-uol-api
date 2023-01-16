@@ -50,11 +50,11 @@ app.get("/messages", async (req, res) => {
         const arrayInvertidoMensagens = [...mensagens].reverse()
         
 
-        if(limit){
-           return res.send(arrayInvertidoMensagens.slice(0,+limit))
+        if(!limit){
+            res.send(arrayInvertidoMensagens)
         }
         
-        res.send(arrayInvertidoMensagens)
+        return res.send(arrayInvertidoMensagens.slice(0,limit))
 
     }
 	catch(err){
@@ -184,5 +184,5 @@ setInterval(async () => {
         }
     })
 }, 15000);
-
-app.listen(process.env.PORT)
+const port = process.env.PORT || 5000
+app.listen(port)
