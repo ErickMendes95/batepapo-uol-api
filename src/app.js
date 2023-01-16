@@ -169,14 +169,16 @@ setInterval(async () => {
 
     await db.collection("participants").find({}).map(async (item) => {
         
-        await db.collection("participants").deleteOne({lastStatus: {$lt: (Date.now() - 10)}})
-        await db.collection("messages").insertOne({
-            from: item.name, 
-            to: 'Todos', 
-            text: 'sai da sala...',
-            type: 'status', 
-            time: dayjs().format('HH:mm:ss')
-        })
+        if(item.lastStatus < (Date.now() - 10)){
+            await db.collection("participants").deleteOne({name: item.name})
+            await db.collection("messages").insertOne({
+                from: item.name, 
+                to: 'Todos', 
+                text: 'sai da sala...',
+                type: 'status', 
+                time: dayjs().format('HH:mm:ss')
+            })
+        }
     })
 }, 15000);
 
