@@ -167,10 +167,10 @@ app.post("/status", async (req, res) => {
 
 setInterval(async () => {
 
-    await db.collection("participants").find().toArray().map(async (item) => {
+    await db.collection("participants").find().map(async (item) => {
         
-        if(item.lastStatus < (Date.now() - 10)){
-            await db.collection("participants").deleteOne({"name": item.name})
+        if(item.lastStatus < Date.now() - 10){
+            await db.collection("participants").deleteOne({name: item.name})
             await db.collection("messages").insertOne({
                 from: item.name, 
                 to: 'Todos', 
