@@ -53,7 +53,7 @@ app.get("/messages", async (req, res) => {
             res.send(arrayInvertidoMensagens)
         }
         
-        return res.send(arrayInvertidoMensagens.slice(0,parseInt(limit))
+        return res.send(arrayInvertidoMensagens.slice(0,parseInt(limit)))
 
     }
 	catch(err){
