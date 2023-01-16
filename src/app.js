@@ -165,8 +165,15 @@ app.post("/status", async (req, res) => {
 }
 )
 
-// setInterval(() => {
-    
-// }, 15000);
+setInterval(async () => {
+    await db.collection("participants").deleteMany({lastStatus: {$lt: (Date.now() - 10)}})
+    await db.collection("messages").insertOne({
+        from: 'xxx', 
+        to: 'Todos', 
+        text: 'sai da sala...', 
+        type: 'status', 
+        time: dayjs().format('HH:mm:ss')
+    })
+}, 15000);
 
 app.listen(process.env.PORT)
