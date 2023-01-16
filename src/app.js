@@ -168,24 +168,21 @@ app.post("/status", async (req, res) => {
 )
 
 setInterval(async () => {
-    await db.collection("participants").deleteMany({lastStatus: {$lt: (Date.now() -10)}})
-}, 15000);
 
-// setInterval(async () => {
-
-//     await db.collection("participants").find().map(async (item) => {
+    const users = await db.collection("participants").find().toArray()
+    users.map(async (item) => {
         
-//         if(item.lastStatus < Date.now() - 10){
-//             await db.collection("participants").deleteOne({name: item.name})
-//             await db.collection("messages").insertOne({
-//                 from: item.name, 
-//                 to: 'Todos', 
-//                 text: 'sai da sala...',
-//                 type: 'status', 
-//                 time: dayjs().format('HH:mm:ss')
-//             })
-//         }
-//     })
-// }, 15000);
+        if(item.lastStatus < Date.now() - 10){
+            await db.collection("participants").deleteOne({name: item.name})
+            await db.collection("messages").insertOne({
+                from: item.name, 
+                to: 'Todos', 
+                text: 'sai da sala...',
+                type: 'status', 
+                time: dayjs().format('HH:mm:ss')
+            })
+        }
+    })
+}, 15000);
 
 app.listen(process.env.PORT)
