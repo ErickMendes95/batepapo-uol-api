@@ -49,11 +49,11 @@ app.get("/messages", async (req, res) => {
         const arrayInvertidoMensagens = [...mensagens].reverse()
 
 
-        if(!(parseInt(limit))){
-            res.send(arrayInvertidoMensagens)
+        if(limit){
+            return res.send(arrayInvertidoMensagens.slice(0,+limit))
         }
         
-        return res.send(arrayInvertidoMensagens.slice(0,parseInt(limit)))
+        res.send(arrayInvertidoMensagens)
 
     }
 	catch(err){
