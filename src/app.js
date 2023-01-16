@@ -166,8 +166,8 @@ app.post("/status", async (req, res) => {
 }
 )
 
-setInterval(() => {
+// setInterval(() => {
     
-}, 15000);
+// }, 15000);
 
 app.listen(process.env.PORT)
