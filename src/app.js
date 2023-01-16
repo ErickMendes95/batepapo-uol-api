@@ -42,9 +42,9 @@ app.get("/messages", async (req, res) => {
     
     try{
 
-        // if(+limit <= 0 || typeof limit === 'string') {
-        //     return res.sendStatus(422)
-        // }
+        if(+limit <= 0 || typeof limit !== 'string') {
+            return res.sendStatus(422)
+        }
 
         const mensagens = await db.collection("messages").find({ $or: [ {from: user}, {to: 'Todos'}, {to: user} ] }).toArray()
         const arrayInvertidoMensagens = [...mensagens].reverse()
