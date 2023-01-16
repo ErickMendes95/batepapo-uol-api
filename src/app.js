@@ -37,23 +37,25 @@ app.get("/participants", async (req, res) => {
 )
 
 app.get("/messages", async (req, res) => {
-	const limit = parseInt(req.query.limit)
+	const limit = req.query.limit
     const { user } = req.headers
     
     try{
 
+        if(limit <= 0 || typeof limit === 'string') {
+            return res.sendStatus(422)
+        }
+
         const mensagens = await db.collection("messages").find({ $or: [ {from: user}, {to: 'Todos'}, {to: user} ] }).toArray()
         const arrayInvertidoMensagens = [...mensagens].reverse()
         
-        // if(limit <= 0 || typeof limit !== 'string') {
-        //     return res.sendStatus(422)
-        // }
 
         if(limit){
-            return res.send(arrayInvertidoMensagens.slice(0,limit))
+           return res.send(arrayInvertidoMensagens.slice(0,parseInt(limit)))
         }
         
         res.send(arrayInvertidoMensagens)
+
     }
 	catch(err){
         console.log(err)
@@ -164,6 +166,12 @@ app.post("/status", async (req, res) => {
 	
 }
 )
+
+setInterval(() => {
+    const time = date.now()
+
+    await db.collection("participants").deleteMany({lastStatus: {$lt: (Date.now() -10)}})
+}, 15000);
 
 setInterval(async () => {
 
